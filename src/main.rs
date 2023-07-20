@@ -1,6 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+use glib::clone;
 use gtk::gdk::Screen;
 use gtk::prelude::*;
 use gtk::Adjustment;
@@ -38,7 +39,21 @@ fn build_ui(app: &Application) {
 
     vbox.set_valign(gtk::Align::Start);
     vbox.set_vexpand(true);
+    let button = Button::builder().label("Button - focus").build();
+    vbox.add(&button);
     box_fill(&vbox);
+
+    editor.connect_leave_notify_event(
+        clone!(@weak button => @default-return Inhibit(true), move |_, _| {
+            button.grab_focus();
+            Inhibit(true)
+        }),
+    );
+
+    editor.connect_enter_notify_event(|editor, _| {
+        editor.child().unwrap().grab_focus();
+        Inhibit(true)
+    });
 
     let css_provider = CssProvider::new();
     let last_valid_css: Rc<RefCell<String>> =
