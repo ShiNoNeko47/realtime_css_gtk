@@ -5,7 +5,12 @@ use gtk::gdk::Screen;
 use gtk::prelude::*;
 use gtk::Adjustment;
 use gtk::Application;
+use gtk::Button;
+use gtk::CheckButton;
 use gtk::CssProvider;
+use gtk::Image;
+use gtk::Label;
+use gtk::RadioButton;
 use gtk::ScrolledWindow;
 use gtk::StyleContext;
 use gtk::TextTagTable;
@@ -24,12 +29,20 @@ fn build_ui(app: &Application) {
     let (editor, buffer) = editor();
     let hbox = gtk::Box::new(gtk::Orientation::Horizontal, 10);
     let scrolled_window = ScrolledWindow::builder().build();
+    scrolled_window.set_hscrollbar_policy(gtk::PolicyType::Never);
     window.set_child(Some(&hbox));
     hbox.add(&editor);
     hbox.add(&scrolled_window);
+    let vbox = gtk::Box::new(gtk::Orientation::Vertical, 10);
+    scrolled_window.add(&vbox);
+
+    vbox.set_valign(gtk::Align::Start);
+    vbox.set_vexpand(true);
+    box_fill(&vbox);
 
     let css_provider = CssProvider::new();
-    let last_valid_css: Rc<RefCell<String>> = Rc::new(RefCell::new(String::new()));
+    let last_valid_css: Rc<RefCell<String>> =
+        Rc::new(RefCell::new(css_provider.to_str().to_string()));
     StyleContext::add_provider_for_screen(
         &Screen::default().unwrap(),
         &css_provider,
@@ -69,4 +82,12 @@ fn editor() -> (ScrolledWindow, Buffer) {
     editor_container.set_child(Some(&editor));
 
     (editor_container, buffer)
+}
+
+fn box_fill(vbox: &gtk::Box) {
+    vbox.add(&Button::builder().label("Button").build());
+    vbox.add(&RadioButton::builder().label("Radio button").build());
+    vbox.add(&CheckButton::builder().label("Checkbox").build());
+    vbox.add(&Label::builder().label("Label").build());
+    vbox.add(&Image::builder().build());
 }

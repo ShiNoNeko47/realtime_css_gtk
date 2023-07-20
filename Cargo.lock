@@ -514,6 +514,7 @@ dependencies = [
 name = "realtime_css_gtk"
 version = "0.1.0"
 dependencies = [
+ "glib",
  "gtk",
  "sourceview4",
 ]
